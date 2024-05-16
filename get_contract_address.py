@@ -18,9 +18,16 @@ print(len(df_consolidated))
 df_consolidated.drop_duplicates(subset=df_consolidated.columns[0], keep='first', inplace=True)
 print(len(df_consolidated))
 
-df_art = pd.read_csv("/Users/vuh/Documents/nft-data-engineering-project/pfp.csv", index_col=0)
+df_art = pd.read_csv("/Users/vuh/Documents/nft-data-engineering-project/nft_rank/pfp.csv", index_col=0)
 print(df_art)
 # Join on 'collection_name' to get contract addresses for these names
 df_joined = pd.merge(df_art, df_consolidated, left_on='Collection', right_on='name', how='left')
-df_joined.dropna(inplace=True)
-print(df_joined['contract_address'])
+# df_joined.dropna(inplace=True)
+print(df_joined[['contract_address', 'Collection']])
+
+na_rows = df_joined[df_joined['contract_address'].isna()]
+
+output_csv_path = 'sample_data.csv'
+df_joined.to_csv(output_csv_path, index=False)
+print(f'Data saved to {output_csv_path}')
+# print(na_rows[['contract_address', 'Collection']])
