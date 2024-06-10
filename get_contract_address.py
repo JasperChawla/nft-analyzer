@@ -27,7 +27,7 @@ print(df_joined[['contract_address', 'Collection']])
 
 na_rows = df_joined[df_joined['contract_address'].isna()]
 
-output_csv_path = 'sample_data.csv'
+output_csv_path = 'pfp_processed.csv'
 df_joined.to_csv(output_csv_path, index=False)
 print(f'Data saved to {output_csv_path}')
 # print(na_rows[['contract_address', 'Collection']])
