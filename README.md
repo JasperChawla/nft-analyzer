@@ -12,6 +12,6 @@ This repo was specifically designed to get the contract addresses of each collec
     
     output_csv_path = 'pfp_processed.csv'
 
-    2.3 This script will output a complete csv file having an additional contract address column correspondingly with each collection within that category
+    2.3 This script will output a complete csv file having an additional contract address column corresponding with each collection within that category
 
 Please note that, for each category, each collection might have more than 1 contract address. Therefore, when the output csv file has less rows than the input csv file, there might be a case that the name of the collection is wrongly typed, please check again carefully by searching the name of that collection in this website https://opensea.io/. If there is nothing wrong with the name, you are good to go!
