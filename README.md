@@ -3,6 +3,7 @@ This repo was specifically designed to get the contract addresses of each collec
 
 1. Have the ranking table of each category ready in the csv format and put it in the nft_rank folder (for example we already had art and pfp collection)
 2. Run the get_contract_address.py script to get the contract addresses for each category.
+
     2.1. Read the original csv file of each category (here, for example, pfp)
     df_art = pd.read_csv("/Users/vuh/Documents/nft-data-engineering-project/nft_rank/pfp.csv", index_col=0)
 
