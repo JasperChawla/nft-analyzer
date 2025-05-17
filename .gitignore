@@ -1,5 +1,5 @@
 .env
 .vscode
 .DS_Store
-data/log
-data/raw_collections
+data/trading_data/log
+data/trading_data/raw_collections

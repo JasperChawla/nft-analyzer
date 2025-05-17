@@ -4,7 +4,9 @@ import os
 import yaml
 
 # Load configuration
-with open("config.yml", 'r') as stream:
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config.yml")
+with open(config_path, 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:

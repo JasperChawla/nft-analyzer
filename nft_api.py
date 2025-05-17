@@ -3,33 +3,38 @@ import json
 import os
 from dotenv import load_dotenv
 import yaml
+import pathlib
 
 # Maximum number of batches to fetch
-MAX_BATCHES = 100  # Will stop after collecting 100 batches
+MAX_BATCHES = 300  # Will stop after collecting 300 batches
 
-def save_batch(file_path, data, batch_count):
-    file_path = os.path.join(file_path, f"batch_{batch_count}.json")
+def save_batch(folder_path, data, batch_count):
+    file_path = os.path.join(folder_path, f"batch_{batch_count}.json")
+    print(f"→ Saving to: {file_path}")  # Add this line
     with open(file_path, 'w') as file:
         json.dump(data, file)
 
+
 def update_cursor(file_path, next_cursor, batch_count):
+    """Update the log file with the latest cursor and batch count."""
     with open(file_path, 'w') as cursor_file:
         json.dump({"next": next_cursor, "batch_count": batch_count}, cursor_file)
 
 def fetch_collections(base_url, headers, data_folder):
-    """Fetch collections using the OpenSea API and handle pagination."""
-    
-    # get folder path
+    """Fetch NFT collections using the OpenSea API and save in batches."""
+
+    # Define folders
     data_collection_folder = os.path.join(data_folder, "raw_collections")
-    data_log = os.path.join(data_folder, "log")
-    
-    # make folder
+    data_log_folder = os.path.join(data_folder, "log")
+
+    # Ensure folders exist
     os.makedirs(data_collection_folder, exist_ok=True)
-    os.makedirs(data_log, exist_ok=True)
-    
-    #get file path
-    collection_log_path = os.path.join(data_log, "raw_collection_log.json")
-    
+    os.makedirs(data_log_folder, exist_ok=True)
+
+    # Path to log file
+    collection_log_path = os.path.join(data_log_folder, "raw_collection_log.json")
+
+    # Read existing log file or initialize
     try:
         with open(collection_log_path, 'r') as cursor_file:
             last_cursor_info = json.load(cursor_file)
@@ -38,24 +43,24 @@ def fetch_collections(base_url, headers, data_folder):
     except FileNotFoundError:
         next_cursor = ''
         batch_count = 0
-    
+
     while True:
-        # Check if we've reached the maximum number of batches
         if batch_count >= MAX_BATCHES:
             print(f"Reached the maximum number of batches ({MAX_BATCHES}).")
             break
-            
+
         url = f"{base_url}&next={next_cursor}" if next_cursor else base_url
         response = requests.get(url, headers=headers)
+
         if response.status_code == 200:
             data = response.json()
             next_cursor = data.get('next', None)
-            if data['collections']:
+            if data.get('collections'):
                 save_batch(data_collection_folder, data, batch_count)
                 print(f"Saved batch {batch_count}")
                 batch_count += 1
                 update_cursor(collection_log_path, next_cursor if next_cursor else '', batch_count)
-            
+
             if not next_cursor:
                 print("Reached the end or no next cursor.")
                 break
@@ -66,22 +71,27 @@ def fetch_collections(base_url, headers, data_folder):
 def main():
     load_dotenv()
     API_KEY = "ee8c4b1c8daa4f7aacc01ea458e801ab"
-        
-    # get config
-    with open("config.yml", 'r') as stream:
+
+    # Load configuration file
+    config_path = pathlib.Path(__file__).parent / "config.yml"
+    with open(config_path, 'r') as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-    
+            return
+
     base_url = "https://api.opensea.io/api/v2/collections?chain=ethereum&limit=100"
     headers = {
         "accept": "application/json",
         "x-api-key": API_KEY
     }
-    
+
+    ##Jasper
+
     data_folder = config['PATH']['DATA_RAW']
     os.makedirs(data_folder, exist_ok=True)
+
     fetch_collections(base_url, headers, data_folder)
 
 if __name__ == "__main__":
